@@ -1,0 +1,41 @@
+---
+interface Props {
+  keyword: string;
+  text: string;
+}
+
+const { keyword, text } = Astro.props;
+---
+
+<div
+  class="flip-card cursor-pointer h-48"
+  onclick="this.querySelector('.flip-inner').classList.toggle('flipped')"
+  style="perspective: 1000px"
+>
+  <div
+    class="flip-inner relative w-full h-full transition-transform duration-500"
+    style="transform-style: preserve-3d"
+  >
+    <!-- Front -->
+    <div
+      class="flip-front absolute inset-0 flex items-center justify-center bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+      style="backface-visibility: hidden"
+    >
+      <span class="text-gray-900 font-semibold text-xl">{keyword}</span>
+    </div>
+
+    <!-- Back -->
+    <div
+      class="flip-back absolute inset-0 flex items-center justify-center bg-gray-50 border border-gray-200 rounded-xl p-5"
+      style="backface-visibility: hidden; transform: rotateY(180deg)"
+    >
+      <p class="text-gray-600 text-sm text-center leading-relaxed">{text}</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .flip-inner.flipped {
+    transform: rotateY(180deg);
+  }
+</style>

@@ -1,0 +1,23 @@
+---
+import FlipCard from './FlipCard.astro';
+
+const cards = [
+  { keyword: "Innovation", text: "Driving new ideas forward and turning them into meaningful solutions." },
+  { keyword: "Strategy",   text: "Aligning vision with action to create a clear path toward goals." },
+  { keyword: "Growth",     text: "Sustainable expansion that creates lasting value for people and organisations." },
+  { keyword: "Impact",     text: "Measurable outcomes that make a real difference in the world." },
+  { keyword: "Design",     text: "Form follows function — creating experiences that are both beautiful and useful." },
+  { keyword: "Data",       text: "Insights drawn from evidence, turning raw information into informed decisions." },
+  { keyword: "People",     text: "Humans at the centre of every decision, product, and process." },
+  { keyword: "Change",     text: "Adapting to new realities and leading transitions with confidence." },
+  { keyword: "Future",     text: "Building what comes next with curiosity, care, and clarity." },
+];
+---
+
+<div class="max-w-5xl mx-auto px-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {cards.map(card => (
+      <FlipCard keyword={card.keyword} text={card.text} />
+    ))}
+  </div>
+</div>
