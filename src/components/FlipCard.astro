@@ -30,21 +30,21 @@ const { keyword, subtitle, text } = Astro.props;
 
       <!-- Back (small view) -->
       <div
-        class="flip-back absolute inset-0 flex items-center justify-center bg-gray-50 border border-gray-200 rounded-xl p-5"
+        class="flip-back absolute inset-0 flex items-start bg-gray-50 border border-gray-200 rounded-xl p-5 overflow-y-auto"
         style="backface-visibility: hidden; transform: rotateY(180deg)"
       >
-        <p class="text-gray-600 text-xs text-center leading-relaxed">{text}</p>
+        <p class="text-gray-600 text-xs text-left leading-relaxed">{text}</p>
       </div>
     </div>
 
     <!-- Expanded content (visible only when zoomed) -->
-    <div class="flip-expanded-content hidden absolute inset-0 flex flex-col items-center justify-center bg-gray-50 rounded-xl p-6 overflow-y-auto">
+    <div class="flip-expanded-content hidden absolute inset-0 flex flex-col items-start justify-start bg-gray-50 rounded-xl p-6 overflow-y-auto">
       <button class="flip-close-btn absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl leading-none z-10">&times;</button>
-      <div class="text-center mb-4">
+      <div class="text-left mb-4">
         <h2 class="text-gray-900 font-bold text-xl">{keyword}</h2>
         {subtitle && <p class="text-gray-500 text-sm mt-1">{subtitle}</p>}
       </div>
-      <p class="text-gray-700 text-base leading-relaxed text-center">{text}</p>
+      <p class="text-gray-700 text-base leading-relaxed text-left">{text}</p>
     </div>
   </div>
 
