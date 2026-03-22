@@ -8,38 +8,192 @@ interface Props {
 const { keyword, subtitle, text } = Astro.props;
 ---
 
-<div
-  class="flip-card cursor-pointer h-64"
-  onclick="this.querySelector('.flip-inner').classList.toggle('flipped')"
-  style="perspective: 1000px"
->
+<div class="flip-card-wrapper">
   <div
-    class="flip-inner relative w-full h-full transition-transform duration-500"
-    style="transform-style: preserve-3d"
+    class="flip-card cursor-pointer h-64"
+    style="perspective: 1000px"
   >
-    <!-- Front -->
     <div
-      class="flip-front absolute inset-0 flex items-center justify-center bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
-      style="backface-visibility: hidden"
+      class="flip-inner relative w-full h-full transition-transform duration-500"
+      style="transform-style: preserve-3d"
     >
-      <div class="text-center px-4">
-        <span class="text-gray-900 font-semibold text-lg block">{keyword}</span>
-        {subtitle && <span class="text-gray-500 text-sm mt-1 block">{subtitle}</span>}
+      <!-- Front -->
+      <div
+        class="flip-front absolute inset-0 flex items-center justify-center bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+        style="backface-visibility: hidden"
+      >
+        <div class="text-center px-4">
+          <span class="text-gray-900 font-semibold text-lg block">{keyword}</span>
+          {subtitle && <span class="text-gray-500 text-sm mt-1 block">{subtitle}</span>}
+        </div>
+      </div>
+
+      <!-- Back (small view) -->
+      <div
+        class="flip-back absolute inset-0 flex items-center justify-center bg-gray-50 border border-gray-200 rounded-xl p-5"
+        style="backface-visibility: hidden; transform: rotateY(180deg)"
+      >
+        <p class="text-gray-600 text-xs text-center leading-relaxed">{text}</p>
       </div>
     </div>
 
-    <!-- Back -->
-    <div
-      class="flip-back absolute inset-0 flex items-center justify-center bg-gray-50 border border-gray-200 rounded-xl p-5"
-      style="backface-visibility: hidden; transform: rotateY(180deg)"
-    >
-      <p class="text-gray-600 text-xs text-center leading-relaxed">{text}</p>
+    <!-- Expanded content (visible only when zoomed) -->
+    <div class="flip-expanded-content hidden absolute inset-0 flex flex-col items-center justify-center bg-gray-50 rounded-xl p-6 overflow-y-auto">
+      <button class="flip-close-btn absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl leading-none z-10">&times;</button>
+      <div class="text-center mb-4">
+        <h2 class="text-gray-900 font-bold text-xl">{keyword}</h2>
+        {subtitle && <p class="text-gray-500 text-sm mt-1">{subtitle}</p>}
+      </div>
+      <p class="text-gray-700 text-base leading-relaxed text-center">{text}</p>
     </div>
   </div>
+
+  <!-- Backdrop -->
+  <div class="flip-backdrop fixed inset-0 z-40 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"></div>
 </div>
 
 <style>
   .flip-inner.flipped {
     transform: rotateY(180deg);
   }
+
+  .flip-card {
+    transition: none;
+  }
+
+  .flip-card.zooming {
+    position: fixed;
+    z-index: 50;
+    transition: top 400ms cubic-bezier(0.4, 0, 0.2, 1),
+                left 400ms cubic-bezier(0.4, 0, 0.2, 1),
+                width 400ms cubic-bezier(0.4, 0, 0.2, 1),
+                height 400ms cubic-bezier(0.4, 0, 0.2, 1),
+                border-radius 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .flip-card.zooming .flip-inner {
+    display: none;
+  }
+
+  .flip-card.zooming .flip-expanded-content {
+    display: flex !important;
+  }
+
+  .flip-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Placeholder keeps grid space while card is fixed-positioned */
+  .flip-card-wrapper {
+    position: relative;
+  }
+  .flip-card-wrapper.has-placeholder {
+    height: 16rem; /* h-64 */
+  }
 </style>
+
+<script>
+  document.addEventListener('astro:page-load', initFlipCards);
+  document.addEventListener('DOMContentLoaded', initFlipCards);
+
+  function initFlipCards() {
+    document.querySelectorAll('.flip-card-wrapper').forEach(wrapper => {
+      const card = wrapper.querySelector('.flip-card') as HTMLElement;
+      if (!card || card.dataset.initialized) return;
+      card.dataset.initialized = 'true';
+
+      const inner = card.querySelector('.flip-inner') as HTMLElement;
+      const backdrop = wrapper.querySelector('.flip-backdrop') as HTMLElement;
+      const closeBtn = card.querySelector('.flip-close-btn') as HTMLElement;
+
+      let isZoomed = false;
+
+      card.addEventListener('click', (e) => {
+        if (isZoomed) return; // clicks inside zoomed card handled by close btn / backdrop
+
+        const isFlipped = inner.classList.contains('flipped');
+
+        if (!isFlipped) {
+          inner.classList.add('flipped');
+          if (window.innerWidth < 768) {
+            setTimeout(() => zoomIn(card, wrapper, backdrop), 420);
+          }
+        } else {
+          if (window.innerWidth < 768) {
+            zoomIn(card, wrapper, backdrop);
+          } else {
+            inner.classList.remove('flipped');
+          }
+        }
+      });
+
+      closeBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        zoomOut(card, wrapper, inner, backdrop);
+      });
+
+      backdrop?.addEventListener('click', () => {
+        zoomOut(card, wrapper, inner, backdrop);
+      });
+
+      function zoomIn(card: HTMLElement, wrapper: Element, backdrop: HTMLElement) {
+        isZoomed = true;
+        const rect = card.getBoundingClientRect();
+
+        // Fix card at its current position
+        card.style.top = rect.top + 'px';
+        card.style.left = rect.left + 'px';
+        card.style.width = rect.width + 'px';
+        card.style.height = rect.height + 'px';
+        card.classList.add('zooming');
+        wrapper.classList.add('has-placeholder');
+
+        document.body.style.overflow = 'hidden';
+        backdrop.classList.add('active');
+
+        // Animate to center/full size
+        requestAnimationFrame(() => {
+          const margin = 16;
+          const targetW = Math.min(window.innerWidth - margin * 2, 512);
+          const targetH = Math.min(window.innerHeight - margin * 2, 600);
+          const targetX = (window.innerWidth - targetW) / 2;
+          const targetY = (window.innerHeight - targetH) / 2;
+
+          card.style.top = targetY + 'px';
+          card.style.left = targetX + 'px';
+          card.style.width = targetW + 'px';
+          card.style.height = targetH + 'px';
+        });
+      }
+
+      function zoomOut(card: HTMLElement, wrapper: Element, inner: HTMLElement, backdrop: HTMLElement) {
+        if (!isZoomed) return;
+
+        // Get the wrapper's position to animate back to
+        const wrapperRect = wrapper.getBoundingClientRect();
+
+        // Animate back to original tile position
+        card.style.top = wrapperRect.top + 'px';
+        card.style.left = wrapperRect.left + 'px';
+        card.style.width = wrapperRect.width + 'px';
+        card.style.height = '16rem';
+
+        backdrop.classList.remove('active');
+
+        // After animation ends, remove fixed positioning
+        setTimeout(() => {
+          card.classList.remove('zooming');
+          card.style.top = '';
+          card.style.left = '';
+          card.style.width = '';
+          card.style.height = '';
+          wrapper.classList.remove('has-placeholder');
+          inner.classList.remove('flipped');
+          document.body.style.overflow = '';
+          isZoomed = false;
+        }, 400);
+      }
+    });
+  }
+</script>
