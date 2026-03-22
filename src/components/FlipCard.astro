@@ -10,7 +10,6 @@ const { keyword, subtitle, text } = Astro.props;
 
 <div
   class="flip-card cursor-pointer h-64"
-  onclick="this.querySelector('.flip-inner').classList.toggle('flipped')"
   style="perspective: 1000px"
 >
   <div
@@ -38,8 +37,80 @@ const { keyword, subtitle, text } = Astro.props;
   </div>
 </div>
 
+<!-- Zoom overlay (hidden by default) -->
+<div class="flip-overlay hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+  <div class="flip-overlay-content bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-8 relative">
+    <button class="flip-overlay-close absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
+    <div class="text-center mb-4">
+      <h2 class="text-gray-900 font-bold text-xl">{keyword}</h2>
+      {subtitle && <p class="text-gray-500 text-sm mt-1">{subtitle}</p>}
+    </div>
+    <p class="text-gray-700 text-base leading-relaxed text-center">{text}</p>
+  </div>
+</div>
+
 <style>
   .flip-inner.flipped {
     transform: rotateY(180deg);
   }
 </style>
+
+<script>
+  document.addEventListener('astro:page-load', initFlipCards);
+  document.addEventListener('DOMContentLoaded', initFlipCards);
+
+  function initFlipCards() {
+    document.querySelectorAll('.flip-card').forEach(card => {
+      if (card.dataset.initialized) return;
+      card.dataset.initialized = 'true';
+
+      const inner = card.querySelector('.flip-inner') as HTMLElement;
+      const overlay = card.nextElementSibling as HTMLElement;
+      if (!overlay?.classList.contains('flip-overlay')) return;
+
+      const closeBtn = overlay.querySelector('.flip-overlay-close') as HTMLElement;
+
+      card.addEventListener('click', () => {
+        const isFlipped = inner.classList.contains('flipped');
+
+        if (!isFlipped) {
+          // First click: flip the card
+          inner.classList.add('flipped');
+          // On small screens, open the zoom overlay after flip animation
+          if (window.innerWidth < 768) {
+            setTimeout(() => openOverlay(overlay), 400);
+          }
+        } else {
+          // Already flipped: on desktop toggle back, on mobile open overlay
+          if (window.innerWidth < 768) {
+            openOverlay(overlay);
+          } else {
+            inner.classList.remove('flipped');
+          }
+        }
+      });
+
+      // Close overlay
+      closeBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeOverlay(overlay);
+      });
+
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          closeOverlay(overlay);
+        }
+      });
+    });
+  }
+
+  function openOverlay(overlay: HTMLElement) {
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeOverlay(overlay: HTMLElement) {
+    overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+</script>
