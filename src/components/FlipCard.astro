@@ -1,14 +1,15 @@
 ---
 interface Props {
   keyword: string;
+  subtitle?: string;
   text: string;
 }
 
-const { keyword, text } = Astro.props;
+const { keyword, subtitle, text } = Astro.props;
 ---
 
 <div
-  class="flip-card cursor-pointer h-48"
+  class="flip-card cursor-pointer h-64"
   onclick="this.querySelector('.flip-inner').classList.toggle('flipped')"
   style="perspective: 1000px"
 >
@@ -21,7 +22,10 @@ const { keyword, text } = Astro.props;
       class="flip-front absolute inset-0 flex items-center justify-center bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
       style="backface-visibility: hidden"
     >
-      <span class="text-gray-900 font-semibold text-xl">{keyword}</span>
+      <div class="text-center px-4">
+        <span class="text-gray-900 font-semibold text-lg block">{keyword}</span>
+        {subtitle && <span class="text-gray-500 text-sm mt-1 block">{subtitle}</span>}
+      </div>
     </div>
 
     <!-- Back -->
@@ -29,7 +33,7 @@ const { keyword, text } = Astro.props;
       class="flip-back absolute inset-0 flex items-center justify-center bg-gray-50 border border-gray-200 rounded-xl p-5"
       style="backface-visibility: hidden; transform: rotateY(180deg)"
     >
-      <p class="text-gray-600 text-sm text-center leading-relaxed">{text}</p>
+      <p class="text-gray-600 text-xs text-center leading-relaxed">{text}</p>
     </div>
   </div>
 </div>

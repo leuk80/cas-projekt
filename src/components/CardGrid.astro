@@ -2,22 +2,58 @@
 import FlipCard from './FlipCard.astro';
 
 const cards = [
-  { keyword: "Innovation", text: "Driving new ideas forward and turning them into meaningful solutions." },
-  { keyword: "Strategy",   text: "Aligning vision with action to create a clear path toward goals." },
-  { keyword: "Growth",     text: "Sustainable expansion that creates lasting value for people and organisations." },
-  { keyword: "Impact",     text: "Measurable outcomes that make a real difference in the world." },
-  { keyword: "Design",     text: "Form follows function — creating experiences that are both beautiful and useful." },
-  { keyword: "Data",       text: "Insights drawn from evidence, turning raw information into informed decisions." },
-  { keyword: "People",     text: "Humans at the centre of every decision, product, and process." },
-  { keyword: "Change",     text: "Adapting to new realities and leading transitions with confidence." },
-  { keyword: "Future",     text: "Building what comes next with curiosity, care, and clarity." },
+  {
+    keyword: "Leadership Communication",
+    subtitle: "Clarity over Comfort",
+    text: "Transparency is uncomfortable, yet the absence of it is even worse. Leadership communication must prioritise reality over narrative by presenting what is, not what is conveniently finished. The limiting factor in most organisations is not complexity, but on how to balance frustration and a sometimes bitter truth."
+  },
+  {
+    keyword: "Leadership Knowhow",
+    subtitle: "from Strategy to execution",
+    text: "Leadership knowhow is not defined by knowledge accumulation, but by the ability to translate complexity into actionable clarity. Strategy is not a target state, but a sequence of conscious choices under constraints. In regulated environments, methodological strength becomes a competitive advantage, as stability, compliance, and trust outweigh short-term speed. Ultimately, marketing must be treated as a business function with direct financial and systemic consequences, not as a communication discipline."
+  },
+  {
+    keyword: "How Not to Lead",
+    subtitle: "the Architecture of Stagnation",
+    text: "Organisations rarely fail due to a lack of ideas. They fail by systematically neutralising them. Ineffective leadership is not accidental, but often embedded in structures, incentives, and rituals that prioritise safety over progress. Innovation is less constrained by capability than by internal friction, misaligned motivations, and an overreliance on legacy thinking. The result is an organisation that optimises the past while explaining why the future cannot work."
+  },
+  {
+    keyword: "Leadership Principles",
+    subtitle: "Environment defines Outcome",
+    text: "Leadership is less about authority and more about the environment one creates. Performance, trust, and accountability are not enforced, they emerge when conditions allow individuals and teams to operate at their best. This requires a deliberate balance between human respect and performance ambition, as well as the willingness to accept tension, criticism, and ambiguity. Therefore, leadership impact is defined not by intent, but by what it enables in others."
+  },
+  {
+    keyword: "Leadership Impact",
+    subtitle: "From Complexity to Effectiveness",
+    text: "Leadership impact is not defined by visibility, but by the structural changes it creates within an organisation. Sustainable performance emerges where decision quality, stability, and human dynamics are aligned. Particularly in regulated environments, impact is measured by the ability to translate complexity into reliable systems without losing adaptability. The objective is not optimisation in isolation, but the creation of conditions under which performance becomes repeatable, scalable, and humanly sustainable."
+  },
+  {
+    keyword: "Leadership Identity",
+    subtitle: "Enabling Impact, not Owning It",
+    text: "Leadership identity is consistency in behaviour, not by situational excellence. It is less about control and more about creating clarity, orientation, and trust in complex environments. The role is not to provide answers, but to enable better questions, better decisions, and better collaboration. One could say that leadership identity is reflected in how effectively we can translate intent into action without losing focus, humanity, or integrity."
+  },
+  {
+    keyword: "Leadership Bingo",
+    subtitle: "",
+    text: "QR Code"
+  },
+  {
+    keyword: "Leadership Team",
+    subtitle: "",
+    text: "In complex and dynamic environments, the strength of a team outweighs the precision of any predefined plan. Adaptability, trust in existing capabilities, and shared responsibility enable progress where rigid paths fail. Leadership therefore shifts from directing outcomes to enabling collaboration, recognising that value is created collectively, not individually. Agile leadership becomes not a method, but a necessity to navigate uncertainty together and to ensure that different roles contribute to one common objective: collective success."
+  },
+  {
+    keyword: "Leadership Jukebox",
+    subtitle: "QR Code",
+    text: "The jukebox is designed as a shared emotional interface, translating individual experiences into collective resonance. Music becomes a medium to reflect the highs and lows of professional life, while acknowledging that meaning is inherently subjective and shaped by personal context. By embracing diversity across genres, identities, and decades, it creates an inclusive space that balances lightness with depth. The objective is not uniform interpretation, but shared connection even through different perspectives."
+  },
 ];
 ---
 
 <div class="max-w-5xl mx-auto px-6">
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     {cards.map(card => (
-      <FlipCard keyword={card.keyword} text={card.text} />
+      <FlipCard keyword={card.keyword} subtitle={card.subtitle} text={card.text} />
     ))}
   </div>
 </div>
