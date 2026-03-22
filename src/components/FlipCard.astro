@@ -38,8 +38,8 @@ const { keyword, subtitle, text } = Astro.props;
 </div>
 
 <!-- Zoom overlay (hidden by default) -->
-<div class="flip-overlay hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-  <div class="flip-overlay-content bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-8 relative">
+<div class="flip-overlay fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none opacity-0 transition-opacity duration-300 ease-out bg-black/50 backdrop-blur-sm">
+  <div class="flip-overlay-content bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-8 relative scale-90 translate-y-6 transition-all duration-300 ease-out">
     <button class="flip-overlay-close absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
     <div class="text-center mb-4">
       <h2 class="text-gray-900 font-bold text-xl">{keyword}</h2>
@@ -52,6 +52,20 @@ const { keyword, subtitle, text } = Astro.props;
 <style>
   .flip-inner.flipped {
     transform: rotateY(180deg);
+  }
+
+  .flip-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .flip-overlay.active .flip-overlay-content {
+    transform: scale(1) translateY(0);
+  }
+
+  .flip-overlay.closing .flip-overlay-content {
+    transform: scale(0.90) translateY(6px);
+    opacity: 0;
   }
 </style>
 
@@ -90,27 +104,39 @@ const { keyword, subtitle, text } = Astro.props;
         }
       });
 
-      // Close overlay
+      // Close overlay and flip tile back
       closeBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
-        closeOverlay(overlay);
+        closeOverlay(overlay, inner);
       });
 
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
-          closeOverlay(overlay);
+          closeOverlay(overlay, inner);
         }
       });
     });
   }
 
   function openOverlay(overlay: HTMLElement) {
-    overlay.classList.remove('hidden');
+    // Trigger reflow then add active class for animation
+    requestAnimationFrame(() => {
+      overlay.classList.add('active');
+    });
     document.body.style.overflow = 'hidden';
   }
 
-  function closeOverlay(overlay: HTMLElement) {
-    overlay.classList.add('hidden');
-    document.body.style.overflow = '';
+  function closeOverlay(overlay: HTMLElement, inner?: HTMLElement) {
+    overlay.classList.add('closing');
+    overlay.classList.remove('active');
+
+    // After close animation finishes, reset and flip tile back
+    setTimeout(() => {
+      overlay.classList.remove('closing');
+      document.body.style.overflow = '';
+      if (inner) {
+        inner.classList.remove('flipped');
+      }
+    }, 300);
   }
 </script>
